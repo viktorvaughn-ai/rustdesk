@@ -6303,6 +6303,7 @@ pub fn claim_pending_switch_sides_uuid(id: &str, uuid: &uuid::Uuid) -> bool {
 }
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
+#[allow(unreachable_code)]
 // IPC bootstrap summary:
 // - Start CM when missing, then bridge bidirectional messages between this task and CM IPC.
 async fn start_ipc(
@@ -6310,6 +6311,14 @@ async fn start_ipc(
     tx_from_cm: mpsc::UnboundedSender<ipc::Data>,
 ) -> ResultType<()> {
     use hbb_common::anyhow::anyhow;
+
+    // Fork customization: never spawn the Connection Manager process. It's a
+    // full second Flutter engine whose only jobs here are click-to-accept
+    // approval and live session UI, neither of which this build uses
+    // (password-only auth is authorized before this is called, independent
+    // of CM). Skipping the spawn avoids that process's memory cost entirely.
+    let _ = (&mut rx_to_cm, &tx_from_cm);
+    return Ok(());
 
     loop {
         if !crate::platform::is_prelogin() {

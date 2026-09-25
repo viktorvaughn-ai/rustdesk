@@ -2358,6 +2358,14 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
 }
 
 pub fn load_custom_client() {
+    // Fork customization: this build has no account system, so never gate
+    // any feature behind signing in. Set unconditionally (not via
+    // custom.txt) so it can't be overridden by a stray/official config.
+    config::HARD_SETTINGS
+        .write()
+        .unwrap()
+        .insert("disable-account".to_owned(), "Y".to_owned());
+
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
