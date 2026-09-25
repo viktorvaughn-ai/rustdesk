@@ -54,6 +54,12 @@ the `libs/hbb_common` submodule, so they survive a submodule bump untouched):
    auto` (`src/platform/windows.rs::get_create_service`), and the CachyOS install already has
    `rustdesk.service` enabled via systemd — both start automatically without any visible window.
 
+4. **Windows app icon** (`res/icon.ico`, `flutter/windows/runner/resources/app_icon.ico`) — replaced
+   with a plain original flat window-glyph icon (not a copy of any real app's branding) so it
+   doesn't stand out in the taskbar. Source SVG and regeneration steps: render at 16/32/48/64/128px
+   with `rsvg-convert`, pack into `.ico` with `magick`/`convert`. Linux icon (`res/scalable.svg`,
+   `res/128x128@2x.png`) and `res/tray-icon.ico` are untouched — this was scoped to Windows only.
+
 ## Conventions specific to this fork
 
 - Keep changes scoped to files under `src/` and `flutter/` in *this* repo — never edit
