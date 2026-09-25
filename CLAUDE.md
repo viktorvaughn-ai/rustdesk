@@ -20,7 +20,16 @@ rules for this codebase: see `AGENTS.md` below (upstream-authored, kept as-is).
   `rustdesk-*-x86_64.exe`/`.msi` for Windows. To rebuild after further changes: commit, push to
   `origin master`, then `gh workflow run "Flutter Nightly Build" --ref master -R
   viktorvaughn-ai/rustdesk` (must pass `-R`, since `gh` otherwise resolves to the upstream repo in
-  a forked working tree). Full matrix build, ~50-90 min.
+  a forked working tree).
+- `.github/workflows/flutter-build.yml` is trimmed to just the 4 jobs this fork needs
+  (`generate-bridge`, `build-RustDeskTempTopMostWindow`, `build-for-windows-flutter`,
+  `build-rustdesk-linux`), each matrix cut down to one x86_64 entry. Upstream's android/ios/macOS/
+  sciter/drm/appimage/flatpak/web jobs and every arm64 variant are removed — they built fine but
+  we don't ship those, and removing them cut the run from the full matrix down to ~15-20 min.
+  `generate-sbom` and `publish_unsigned` were also removed (nothing else needs them; the latter
+  bundled unsigned macOS/sciter artifacts we no longer build). **This means a straight `git merge
+  upstream/master` will conflict on this file whenever upstream changes it** — re-apply the same
+  trim (keep only those 4 jobs/matrix entries) rather than trying to reconcile the removed jobs.
 
 ## Fork customizations
 
