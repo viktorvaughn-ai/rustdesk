@@ -2366,6 +2366,18 @@ pub fn load_custom_client() {
         .unwrap()
         .insert("disable-account".to_owned(), "Y".to_owned());
 
+    // Fork customization: no tray icon on Windows (personal/unattended use).
+    // tray.rs::start_tray reads this same builtin option on every non-macOS
+    // platform, so this is scoped to Windows only to leave the Linux tray
+    // (used interactively on this machine) untouched. The Windows service
+    // already auto-starts at boot (`sc create ... start= auto`, set up by
+    // the normal installer), so no separate autostart change is needed.
+    #[cfg(windows)]
+    config::BUILTIN_SETTINGS
+        .write()
+        .unwrap()
+        .insert("hide-tray".to_owned(), "Y".to_owned());
+
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {
         read_custom_client(data.trim());
